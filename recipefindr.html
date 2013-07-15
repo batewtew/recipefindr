@@ -1,0 +1,228 @@
+<head>
+  <title>recipeFindr</title>
+
+    <style type="text/css">
+
+      /* Sticky footer styles
+      -------------------------------------------------- */
+
+      html,
+      body {
+        height: 100%;
+        /* The html and body elements cannot have any padding or margin. */
+      }
+
+      /* Wrapper for page content to push down footer */
+      #wrap {
+        min-height: 100%;
+        height: auto !important;
+        height: 100%;
+        /* Negative indent footer by it's height */
+        margin: 0 auto -60px;
+      }
+
+      /* Set the fixed height of the footer here */
+      #push,
+      #footer {
+        height: 60px;
+      }
+      #footer {
+        background-color: #f5f5f5;
+      }
+
+      /* Lastly, apply responsive CSS fixes as necessary */
+      @media (max-width: 767px) {
+        #footer {
+          margin-left: -20px;
+          margin-right: -20px;
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+      }
+
+
+
+      /* Custom page CSS
+      -------------------------------------------------- */
+      /* Not required for template or sticky footer method. */
+
+      .container {
+        width: auto;
+        max-width: 980px;
+      }
+      .container .credit {
+        margin: 20px 0;
+      }
+    </style>
+</head>
+
+  <body>
+
+
+    <!-- Part 1: Wrap all page content here -->
+    
+
+      <!-- Begin page content -->
+      <div class="container">
+        <div class="page-header">
+          <h1>{{> hello}}</h1>
+        </div>
+		<div class="row-fluid">
+			<div class="span5">
+				{{> search}}
+				{{> view}}
+				{{> add}}
+			</div>
+			<div id="myRecipe" class="span7">
+				{{> recipe}}
+			</div>
+		</div>
+        <!--p>Use <a href="./sticky-footer-navbar.html">the sticky footer</a> with a fixed navbar if need be, too.</p-->
+      </div>
+
+      <div id="push"></div>
+    
+
+    <!--div id="footer">
+      <div class="container">
+        <p class="muted credit"><a href="#recipeFindr">RecipeFindr</a> &copy 2013 All Rights Reserved</p>
+      </div>
+    </div-->
+
+</body>
+
+<template name="hello">
+  {{#constant}}
+  <h1>Welcome to RecipeFindr</h1>
+  {{/constant}}
+</template>
+
+<template name="search">
+	{{#constant}}
+	<form class="form-search">
+	  <input type="text" class="input-large search-query" placeholder="Find recipe...">
+	  <!--button class="btn btn-search">Search</button>
+	  <button class="btn btn-display-all">Display All</button-->
+	</form>
+	{{/constant}}
+</template>
+
+<template name="view">
+	<div>
+		<p class="lead">{{{count}}}</p>
+		<div class="push"></div>
+		<ul class="unstyled">
+		{{#each recipes}}
+			<li>	
+				<p><button class="btn btn-mini btn-inverse btn-edit"><i class="icon-edit icon-white"></i> Edit</button> <a class="recipe-link" href="#">{{name}}</a> - {{description}}</p>
+			</li>
+		{{/each}}
+		</ul>
+	</div>
+</template>
+
+<template name="add">
+<div>
+	<button class="btn btn-primary btn-large add-recipe" type="button">+ Add Recipe</button>
+</div>
+
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 700px">
+  <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+	<h3 id="myModalLabel">{{#if currentRecipe}}Edit{{else}}New{{/if}} Recipe</h3>
+  </div>
+  <div class="modal-body">
+	<form class="form-horizontal">
+		<div class="control-group">
+			<label class="control-label" for="inputName">Name</label>
+			<div class="controls">
+				<input type="text" id="inputName" value="{{#if currentRecipe}}{{currentRecipe.name}}{{/if}}">
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="inputDescription">Description</label>
+			<div class="controls">
+				<input type="text" id="inputDescription" value="{{#if currentRecipe}}{{currentRecipe.description}}{{/if}}">
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">Ingredients</label>
+			<div class="controls">
+				<div class="input-append">
+					<input type="text" id="inputIngredientQty" placeholder="0">
+					<div class="btn-group">
+						<button class="btn dropdown-toggle" id="inputIngredientUnit" data-toggle="dropdown">
+							Unit
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li>&nbsp;tbsp</li>
+							<li>&nbsp;tsp</li>
+							<li>&nbsp;cup</li>
+							<li>&nbsp;gram</li>
+						</ul>
+					</div>&nbsp;
+				</div>
+				<input type="text" id="inputIngredientName" placeholder="Ingredient">&nbsp;
+				<button class="btn add-ingredient" type="button"><i class="icon-plus"></i> Add</button>
+				<br>
+				{{>formIngredients}}
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">Instructions</label>
+			<div class="controls">
+				<input type="text" placeholder="Function available soon..." disabled>
+				<button class="btn add-instruction" type="button" disabled><i class="icon-plus"></i> Add</button>
+				<br >
+				{{#if currentRecipe}}
+					<ol>
+					{{#each currentRecipe.instructions}}
+						<li><!--a class="close" href="#">&times;</a--> {{instruction}}</li>
+					{{/each}}
+					</ol>
+				{{/if}}
+
+			</div>
+		</div>
+	</form>
+  </div>
+  <div class="modal-footer">
+	<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+	<button class="btn btn-primary save-recipe">Save changes</button>
+  </div>
+</div>
+</template>
+
+<template name="recipe">
+<div>
+{{#with selectedRecipe}}
+	<h2>{{name}}</h2>
+	<p><em>{{description}}</em></p>
+	{{#if ingredients}}
+		<strong>Ingredients</strong>
+		<ul class="unstyled">
+		{{#each ingredients}}
+			<li><span class="edit-qty">{{qty}}</span> <span class="edit-unit">{{unit}}</span> <span class="ingredient">{{ingredient}}</span></li>
+		{{/each}}
+		</ul>
+	{{/if}}
+	{{#if instructions}}
+		<strong>Instructions</strong>
+		<ol>
+		{{#each instructions}}
+			<li>{{instruction}}</li>
+		{{/each}}
+		</ol>
+	{{/if}}
+	<div>
+	</div>
+{{/with}}
+</div>
+</template>
+
+<template name="formIngredients">
+{{#each currentIngredients}}
+	<span class="label">{{ingredient}}&nbsp;<button class="close">&times;</button></span>
+{{/each}}
+</template>

@@ -1,0 +1,8 @@
+{
+  "packages": {
+    "datatables": {},
+    "database-forms": {},
+    "router": {},
+    "underscore-string": {}
+  }
+}
