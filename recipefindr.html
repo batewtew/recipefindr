@@ -149,7 +149,7 @@
 			<label class="control-label">Ingredients</label>
 			<div class="controls">
 				<div class="input-append">
-					<input type="text" id="inputIngredientQty" placeholder="0">
+					<input class="input-mini" type="text" id="inputIngredientQty" placeholder="0">
 					<div class="btn-group">
 						<button class="btn dropdown-toggle" id="inputIngredientUnit" data-toggle="dropdown">
 							Unit
@@ -161,11 +161,11 @@
 							<li>&nbsp;cup</li>
 							<li>&nbsp;gram</li>
 						</ul>
-					</div>&nbsp;
+					</div>
+					<br>
 				</div>
-				<input type="text" id="inputIngredientName" placeholder="Ingredient">&nbsp;
-				<button class="btn add-ingredient" type="button"><i class="icon-plus"></i> Add</button>
-				<br>
+				<input class="input-small" type="text" id="inputIngredientName" placeholder="Ingredient">&nbsp;
+				<button class="btn add-ingredient" type="button"><i class="icon-plus"></i> Add</button><br>
 				{{>formIngredients}}
 			</div>
 		</div>

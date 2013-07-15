@@ -1,6 +1,6 @@
 Recipes = new Meteor.Collection('recipes');
 
-var turnOnLogs = false;
+var turnOnLogs = true;
 
 var logIt = function(string) {
 	if(turnOnLogs && typeof console !== 'undefined') {
@@ -61,14 +61,22 @@ if (Meteor.isClient) {
   Template.add.currentRecipe = function() {
 	// get current recipe from the Session
 	var c = Session.get('currentRecipe');
-	logIt('Current recipe is ' + c);
+	if(!_.isNull(c) && !_.isUndefined(c)) {
+		var id = c._id;
+		c = Recipes.findOne({_id: id});
+		logIt('Current recipe is ' + c._id);
+	}
 	return c;
   }
 
   Template.recipe.selectedRecipe = function() {
 	// get selected recipe from Session
 	var c = Session.get('selectedRecipe');
-	logIt('Selected recipe is ' + c);
+	if(!_.isNull(c) && !_.isUndefined(c)) {
+		var id = c._id;
+		c = Recipes.findOne({_id: id});
+		logIt('Selected recipe is ' + c._id);
+	}
 	return c;
   }
 
