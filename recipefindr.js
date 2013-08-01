@@ -6,7 +6,12 @@ var logIt = function(string) {
 	if(turnOnLogs && typeof console !== 'undefined') {
 		console.log(string);
 	}
-}
+};
+
+var nl2br = function (str, is_xhtml) {   
+	var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';    
+	return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
+};
 
 if (Meteor.isClient) {
 
@@ -19,24 +24,24 @@ if (Meteor.isClient) {
 	var searchTerm = Session.get('searchQuery');
 	var count = 0;
 	if(!_.isNull(searchTerm) && !_.isUndefined(searchTerm)) {
-		if(searchTerm == '')
+		if(searchTerm === '')
 			count = Recipes.find({}).count();
 		else
 			count = Recipes.find({'ingredients.ingredient': searchTerm}).count();
 	} else {
 		count = Recipes.find({}).count();
 	}
-	if(_.isNull(searchTerm) || _.isUndefined(searchTerm) || searchTerm == '')
-		if (count == 0 )
+	if(_.isNull(searchTerm) || _.isUndefined(searchTerm) || searchTerm === '')
+		if (count === 0 )
 			return 'No recipe available. Add one?';
-		else if (count == 1)
+		else if (count === 1)
 			return 'Found ' + count + ' recipe...';
 		else
 			return 'Found ' + count + ' recipes...';
 	else 
-		if (count == 0)
+		if (count === 0)
 			return 'No recipe found using ingredient <em><span class="label">' + searchTerm  + '</em>. Add one?';
-		else if (count == 1)
+		else if (count === 1)
 			return 'Found ' + count + ' recipe using ingredient <em><span class="label label-success">' + searchTerm  + '</em>.';
 		else
 			return 'Found ' + count + ' recipes using ingredient <em><span class="label label-success">' + searchTerm  + '</em>.';
@@ -47,7 +52,7 @@ if (Meteor.isClient) {
 		var searchTerm = Session.get('searchQuery');
 		if(!_.isNull(searchTerm) && !_.isUndefined(searchTerm)) {
 			logIt('Search term found \'' + searchTerm + '\'');
-			if(searchTerm == '')
+			if(searchTerm === '')
 				return Recipes.find({});
 			else
 				return Recipes.find({'ingredients.ingredient': searchTerm});
@@ -64,10 +69,10 @@ if (Meteor.isClient) {
 	if(!_.isNull(c) && !_.isUndefined(c)) {
 		var id = c._id;
 		c = Recipes.findOne({_id: id});
-		logIt('Current recipe is ' + c._id);
+		// logIt('Current recipe is ' + c._id);
 	}
 	return c;
-  }
+  };
 
   Template.recipe.selectedRecipe = function() {
 	// get selected recipe from Session
@@ -76,15 +81,23 @@ if (Meteor.isClient) {
 		var id = c._id;
 		c = Recipes.findOne({_id: id});
 		logIt('Selected recipe is ' + c._id);
+		if (!_.isNull(c.instructions) && !_.isUndefined(c.instructions)) {
+			c.instructions = nl2br(c.instructions, false);
+		}
 	}
 	return c;
-  }
+  };
 
   Template.formIngredients.currentIngredients = function() {
 	// get current recipe from the Session
 	var c = Session.get('currentIngredients');
 	logIt('Current ingredient is ' + c);
 	return c;
+  };
+
+  Template.formIngredients.addIngredient = function() {
+	logIt("Add ingredient? " + this);
+	return Session.equals('addIngredient', true);
   }
 
   Template.hello.events({
@@ -132,7 +145,8 @@ if (Meteor.isClient) {
 		var recipe = {
 			name: $('#inputName').val(),
 			description: $('#inputDescription').val(),
-			ingredients: Session.get('currentIngredients')
+			ingredients: Session.get('currentIngredients'),
+			instructions: $('#inputInstructions').val()
 		};
 
 
@@ -155,18 +169,20 @@ if (Meteor.isClient) {
 			Recipes.update({_id: currentRecipeId}, {$set: recipe}, callback);
 		}
 	},
+	'click .new-ingredient' : function(event) {
+		Session.set('adding_ingredient', this._id);
+	},
 	'click .add-ingredient' : function(event) {
 		var ingredient = {
 			ingredient: $('#inputIngredientName').val(),
 			qty: $('#inputIngredientQty').val()
-		}
+		};
 		
 		var currentRecipe = Session.get('currentRecipe');
 		var currentIngredients = Session.get('currentIngredients');
 
-		if( _.isNull(currentIngredients) || _.isUndefined(currentIngredients) 
-			|| (_.isArray(currentIngredients) && currentIngredients.length == 0) ) {
-			currentIngredients = new Array();
+		if( _.isNull(currentIngredients) || _.isUndefined(currentIngredients) || (_.isArray(currentIngredients) && currentIngredients.length === 0) ) {
+			currentIngredients = [];
 		}
 		logIt('Adding ingredient ' + ingredient);
 		currentIngredients.push(ingredient);
@@ -181,7 +197,20 @@ if (Meteor.isClient) {
 	'dblclick .edit-qty': function(event) {
 		// TODO make editable
 	}
-  })
+  });
+
+  Template.formIngredients.events({
+	'click .ingredient': function(event) {
+		// TODO make editable
+		logIt('Selected ingredient: ' + this);
+		$('#inputIngredientName').val(this.ingredient);
+		$('#inputIngredientQty').val(this.qty);
+	},
+	'click .new-ingredient': function(event) {
+		event.preventDefault();
+		Session.set('addIngredient', true);
+	}
+  });
 
 }
 

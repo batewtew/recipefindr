@@ -148,40 +148,14 @@
 		<div class="control-group">
 			<label class="control-label">Ingredients</label>
 			<div class="controls">
-				<div class="input-append">
-					<input class="input-mini" type="text" id="inputIngredientQty" placeholder="0">
-					<div class="btn-group">
-						<button class="btn dropdown-toggle" id="inputIngredientUnit" data-toggle="dropdown">
-							Unit
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li>&nbsp;tbsp</li>
-							<li>&nbsp;tsp</li>
-							<li>&nbsp;cup</li>
-							<li>&nbsp;gram</li>
-						</ul>
-					</div>
-					<br>
-				</div>
-				<input class="input-small" type="text" id="inputIngredientName" placeholder="Ingredient">&nbsp;
-				<button class="btn add-ingredient" type="button"><i class="icon-plus"></i> Add</button><br>
 				{{>formIngredients}}
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">Instructions</label>
 			<div class="controls">
-				<input type="text" placeholder="Function available soon..." disabled>
-				<button class="btn add-instruction" type="button" disabled><i class="icon-plus"></i> Add</button>
-				<br >
-				{{#if currentRecipe}}
-					<ol>
-					{{#each currentRecipe.instructions}}
-						<li><!--a class="close" href="#">&times;</a--> {{instruction}}</li>
-					{{/each}}
-					</ol>
-				{{/if}}
+				<textarea id="inputInstructions" placeholder="Instructions..." rows="5">{{#if currentRecipe}}{{currentRecipe.instructions}}{{/if}}</textarea>
+				<!--button class="btn add-instruction" type="button" disabled><i class="icon-plus"></i> Add</button-->
 
 			</div>
 		</div>
@@ -209,11 +183,9 @@
 	{{/if}}
 	{{#if instructions}}
 		<strong>Instructions</strong>
-		<ol>
-		{{#each instructions}}
-			<li>{{instruction}}</li>
-		{{/each}}
-		</ol>
+		<div>
+			{{{instructions}}}
+		</div>
 	{{/if}}
 	<div>
 	</div>
@@ -223,6 +195,21 @@
 
 <template name="formIngredients">
 {{#each currentIngredients}}
-	<span class="label">{{ingredient}}&nbsp;<button class="close">&times;</button></span>
+	<span class="label ingredient">{{ingredient}}&nbsp;<button class="close">&times;</button></span>
 {{/each}}
+{{#if addIngredient}}
+<div class="label input-append">
+	<input class="small-input" type="text" id="inputIngredientQty" placeholder="0" style="width: 20px;">
+	<select class="small-input" id="inputIngredientUnit" style="width: 50px;">
+		<option>tbsp</option>
+		<option>tsp</option>
+		<option>tsp</option>
+		<option>gram</option>
+		<option>liter</option>
+	</select>
+	<input class="small-input" type="text" id="inputIngredientName" placeholder="Ingredient..." style="width: 100px;">&nbsp;<button class="plus add-ingredient" type="button">+</button>
+</div>
+{{else}}
+<span class="label new-ingredient"><button class="plus" type="button">+</button> Add</span>
+{{/if}}
 </template>
