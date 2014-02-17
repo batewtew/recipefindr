@@ -6,3 +6,4 @@ A simple CRUD application using Meteor
 Demo: http://recipefindr.meteor.com
 
 made in Windows 7
+edited in OSX Mavs
